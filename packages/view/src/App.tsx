@@ -2,6 +2,7 @@ import { Outlet } from "@tanstack/react-router"
 import { TanStackRouterDevtools } from "@tanstack/react-router-devtools"
 import { Header } from "@/components/layout/Header"
 import { Sidebar } from "@/components/layout/Sidebar"
+import { Toaster } from "@/components/ui/toast"
 
 export function App() {
   return (
@@ -12,6 +13,7 @@ export function App() {
         <main className="flex-1 overflow-auto">
           <Outlet />
         </main>
+        <Toaster />
       </div>
       <TanStackRouterDevtools position="bottom-right" />
     </div>
