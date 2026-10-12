@@ -4,8 +4,8 @@ import {
   validateParcoursForm,
   type ParcoursFormErrors,
   type ParcoursFormValues,
-} from "./parcours.schema"
-import type { CreateParcoursPayload, Parcours } from "./parcours.types"
+} from "../model/parcours.schema"
+import type { CreateParcoursPayload, Parcours } from "../model/parcours.types"
 
 /**
  * État et validation du formulaire parcours, indépendants de l'affichage

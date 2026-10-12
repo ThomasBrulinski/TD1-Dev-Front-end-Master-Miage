@@ -3,9 +3,9 @@ import { ApiError } from "../packages/view/src/lib/api"
 import {
   getCreateParcoursErrorMessage,
   parcoursApi,
-} from "../packages/view/src/features/parcours/parcours.api"
-import { validateParcoursForm } from "../packages/view/src/features/parcours/parcours.schema"
-import type { Parcours } from "../packages/view/src/features/parcours/parcours.types"
+} from "../packages/view/src/features/parcours/model/parcours.api"
+import { validateParcoursForm } from "../packages/view/src/features/parcours/model/parcours.schema"
+import type { Parcours } from "../packages/view/src/features/parcours/model/parcours.types"
 
 const existing: Parcours[] = [
   { id: 1, nomParcours: "Systèmes d'information", anneeFormation: 1, created_at: "2026-10-12 08:00:00" },

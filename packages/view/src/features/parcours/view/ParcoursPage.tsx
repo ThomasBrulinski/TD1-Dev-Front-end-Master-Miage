@@ -1,33 +1,18 @@
 import { Card, PageContainer, PageHeader } from "@/components/layout/Page"
-import { Button } from "@/components/ui/Button"
-import { useToast } from "@/components/ui/toast/useToast"
+import { Button } from "@/components/ui/button"
+import { Skeleton } from "@/components/ui/skeleton"
 import { CircleAlert, GraduationCap, Loader2, Plus, RotateCw } from "lucide-react"
-import { useState, type ReactNode } from "react"
-import { CreateParcoursDialog } from "./components/CreateParcoursDialog"
-import { ParcoursTable } from "./components/ParcoursTable"
-import { useParcoursList } from "./parcours.queries"
-import { formatAnnee, type Parcours } from "./parcours.types"
+import type { ReactNode } from "react"
+import { useParcoursPageController } from "../controller/useParcoursPageController"
+import { CreateParcoursDialog } from "./CreateParcoursDialog"
+import { ParcoursTable } from "./ParcoursTable"
 
 /**
- * Page de consultation des parcours. Elle ne fait que composer :
- * la donnée vient du hook, l'affichage des composants, la création de la modale.
+ * Vue de la page Parcours : affiche l'état fourni par le contrôleur
+ * (liste, chargement, erreur, vide) et lui transmet les clics.
  */
 export function ParcoursPage() {
-  const parcoursQuery = useParcoursList()
-  const toast = useToast()
-  const [isCreateOpen, setIsCreateOpen] = useState(false)
-  const [lastCreatedId, setLastCreatedId] = useState<number | null>(null)
-
-  const parcours = parcoursQuery.data ?? []
-  const openCreate = () => setIsCreateOpen(true)
-
-  const handleCreated = (created: Parcours) => {
-    setLastCreatedId(created.id)
-    toast.success(
-      "Parcours créé",
-      `« ${created.nomParcours} » (${formatAnnee(created.anneeFormation)}) a été ajouté à la liste.`
-    )
-  }
+  const page = useParcoursPageController()
 
   return (
     <PageContainer>
@@ -35,7 +20,8 @@ export function ParcoursPage() {
         title="Parcours"
         description="Liste et gestion des parcours de formation."
         actions={
-          <Button icon={<Plus className="size-4" aria-hidden="true" />} onClick={openCreate}>
+          <Button onClick={page.openCreate}>
+            <Plus aria-hidden="true" />
             Nouveau parcours
           </Button>
         }
@@ -44,11 +30,11 @@ export function ParcoursPage() {
       <Card className="p-0">
         <div className="flex items-center justify-between border-b border-zinc-200 px-6 py-4">
           <h2 className="text-sm font-semibold text-zinc-900">
-            {parcoursQuery.isSuccess
-              ? `${parcours.length} parcours`
+            {page.isLoaded
+              ? `${page.parcours.length} parcours`
               : "Parcours"}
           </h2>
-          {parcoursQuery.isFetching && !parcoursQuery.isPending && (
+          {page.isRefreshing && (
             <span className="flex items-center gap-1.5 text-xs text-zinc-500" role="status">
               <Loader2 className="size-3.5 animate-spin" aria-hidden="true" />
               Actualisation…
@@ -56,44 +42,42 @@ export function ParcoursPage() {
           )}
         </div>
 
-        {parcoursQuery.isPending ? (
+        {page.isLoading ? (
           <ListSkeleton />
-        ) : parcoursQuery.isError ? (
+        ) : page.isError ? (
           <ListMessage
             icon={<CircleAlert className="size-6 text-red-500" aria-hidden="true" />}
             title="Impossible de charger les parcours"
             description="Vérifiez que l'API est démarrée puis réessayez."
             action={
-              <Button
-                variant="secondary"
-                icon={<RotateCw className="size-4" aria-hidden="true" />}
-                onClick={() => parcoursQuery.refetch()}
-              >
+              <Button variant="outline" onClick={page.retry}>
+                <RotateCw aria-hidden="true" />
                 Réessayer
               </Button>
             }
           />
-        ) : parcours.length === 0 ? (
+        ) : page.parcours.length === 0 ? (
           <ListMessage
             icon={<GraduationCap className="size-6 text-zinc-400" aria-hidden="true" />}
             title="Aucun parcours pour le moment"
             description="Créez le premier parcours de l'établissement."
             action={
-              <Button icon={<Plus className="size-4" aria-hidden="true" />} onClick={openCreate}>
+              <Button onClick={page.openCreate}>
+                <Plus aria-hidden="true" />
                 Nouveau parcours
               </Button>
             }
           />
         ) : (
-          <ParcoursTable parcours={parcours} highlightedId={lastCreatedId} />
+          <ParcoursTable parcours={page.parcours} highlightedId={page.lastCreatedId} />
         )}
       </Card>
 
-      {isCreateOpen && (
+      {page.isCreateOpen && (
         <CreateParcoursDialog
-          existing={parcours}
-          onClose={() => setIsCreateOpen(false)}
-          onCreated={handleCreated}
+          existing={page.parcours}
+          onClose={page.closeCreate}
+          onCreated={page.handleCreated}
         />
       )}
     </PageContainer>
@@ -105,9 +89,9 @@ function ListSkeleton() {
     <div className="divide-y divide-zinc-100" aria-busy="true" aria-label="Chargement des parcours">
       {[0, 1, 2].map((row) => (
         <div key={row} className="flex items-center gap-6 px-6 py-4">
-          <div className="h-4 w-1/3 animate-pulse rounded bg-zinc-200" />
-          <div className="h-4 w-10 animate-pulse rounded bg-zinc-200" />
-          <div className="h-4 w-24 animate-pulse rounded bg-zinc-100" />
+          <Skeleton className="h-4 w-1/3" />
+          <Skeleton className="h-4 w-10" />
+          <Skeleton className="h-4 w-24" />
         </div>
       ))}
     </div>
