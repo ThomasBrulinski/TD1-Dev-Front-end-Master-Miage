@@ -1,9 +1,5 @@
 import { Toaster as Sonner, type ToasterProps } from "sonner"
 
-/**
- * Composant `sonner` de shadcn/ui. La version d'origine lit le thème via
- * next-themes ; ce projet n'a qu'un thème clair, donc on le fixe ici.
- */
 const Toaster = ({ ...props }: ToasterProps) => {
   return (
     <Sonner

@@ -2,7 +2,7 @@ import { App } from "@/App"
 import { features } from "@/config/features"
 import { ExercicesPage } from "@/features/exercices/ExercicesPage"
 import { HomePage } from "@/features/home/HomePage"
-import { ParcoursPage } from "@/features/parcours/view/ParcoursPage"
+import { ParcoursPage } from "@/features/parcours/ParcoursPage"
 import {
   createRootRoute,
   createRoute,

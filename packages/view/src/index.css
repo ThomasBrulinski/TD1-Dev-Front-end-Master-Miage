@@ -3,8 +3,6 @@
 
 @custom-variant dark (&:is(.dark *));
 
-/* Thème shadcn/ui (base "neutral") : les composants de components/ui
-   utilisent ces variables (bg-primary, border-input, ring…). */
 :root {
   --radius: 0.625rem;
   --background: oklch(1 0 0);
@@ -83,24 +81,5 @@
 @layer base {
   * {
     @apply border-border outline-ring/50;
-  }
-}
-
-/* Mise en évidence temporaire d'une ligne qui vient d'être créée */
-@keyframes row-highlight {
-  from {
-    background-color: var(--color-emerald-100);
-  }
-  to {
-    background-color: transparent;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  *,
-  ::before,
-  ::after {
-    animation-duration: 0.01ms !important;
-    transition-duration: 0.01ms !important;
   }
 }
