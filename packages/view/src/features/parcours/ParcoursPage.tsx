@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button"
 import { AddParcoursModal } from "./components/AddParcoursModal"
 import { ParcoursTable } from "./components/ParcoursTable"
 import { ParcoursSearch } from "./components/ParcoursSearch"
+import { ParcoursFilter, type AnneeFilterType } from "./components/ParcoursFilter"
 import { getParcours } from "./services/parcoursService"
 
 export function ParcoursPage() {
@@ -14,12 +15,20 @@ export function ParcoursPage() {
   })
 
   const [searchQuery, setSearchQuery] = useState("")
+  const [anneeFilter, setAnneeFilter] = useState<AnneeFilterType>("ALL")
 
   const filteredParcours = useMemo(() => {
-    return parcours.filter((item) =>
-      item.nomParcours.toLowerCase().includes(searchQuery.toLowerCase().trim())
-    )
-  }, [parcours, searchQuery])
+    return parcours.filter((item) => {
+      const matchSearch = item.nomParcours
+        .toLowerCase()
+        .includes(searchQuery.toLowerCase().trim())
+      
+      const matchAnnee =
+        anneeFilter === "ALL" ? true : item.anneeFormation === Number(anneeFilter)
+
+      return matchSearch && matchAnnee
+    })
+  }, [parcours, searchQuery, anneeFilter])
 
   return (
     <PageContainer>
@@ -29,8 +38,9 @@ export function ParcoursPage() {
         actions={<AddParcoursModal />}
       />
 
-      <div className="mb-4">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between mb-4">
         <ParcoursSearch value={searchQuery} onChange={setSearchQuery} />
+        <ParcoursFilter value={anneeFilter} onChange={setAnneeFilter} />
       </div>
 
       <Card className="p-0">
@@ -57,13 +67,16 @@ export function ParcoursPage() {
 
         {!isPending && !isError && parcours.length > 0 && filteredParcours.length === 0 && (
           <div className="px-6 py-10 text-center text-muted-foreground">
-            <p>Aucun parcours ne correspond à « {searchQuery} ».</p>
+            <p>Aucun parcours ne correspond aux critères sélectionnés.</p>
             <Button
               variant="link"
-              onClick={() => setSearchQuery("")}
+              onClick={() => {
+                setSearchQuery("")
+                setAnneeFilter("ALL")
+              }}
               className="mt-2"
             >
-              Effacer la recherche
+              Réinitialiser les filtres
             </Button>
           </div>
         )}
