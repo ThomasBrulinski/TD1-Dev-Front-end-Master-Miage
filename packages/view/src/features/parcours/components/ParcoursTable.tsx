@@ -18,15 +18,15 @@ export function ParcoursTable({ parcours }: ParcoursTableProps) {
     <Table>
       <TableHeader>
         <TableRow>
-          <TableHead className="px-6">Nom du parcours</TableHead>
-          <TableHead className="px-6">Année</TableHead>
-          <TableHead className="px-6">Créé le</TableHead>
+          <TableHead className="px-6 py-3">Nom du parcours</TableHead>
+          <TableHead className="px-6 py-3">Année</TableHead>
+          <TableHead className="px-6 py-3">Créé le</TableHead>
         </TableRow>
       </TableHeader>
       <TableBody>
         {parcours.map((item) => (
           <TableRow key={item.id}>
-            <TableCell className="px-6 py-3 font-medium">{item.nomParcours}</TableCell>
+            <TableCell className="px-6 py-3">{item.nomParcours}</TableCell>
             <TableCell className="px-6 py-3">
               <Badge variant="secondary">M{item.anneeFormation}</Badge>
             </TableCell>
