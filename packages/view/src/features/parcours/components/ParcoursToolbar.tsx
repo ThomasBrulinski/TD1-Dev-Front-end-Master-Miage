@@ -1,6 +1,13 @@
 import { Search, X } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
 import { cn } from "@/utils/cn"
 import {
   hasActiveCriteria,
@@ -45,6 +52,7 @@ export function ParcoursToolbar({
   onReset,
 }: ParcoursToolbarProps) {
   const sortValue = `${query.sort}-${query.dir}`
+  const currentSortOption = SORT_OPTIONS.find((o) => o.value === sortValue)
 
   return (
     <div className="flex flex-col gap-3 border-b px-4 py-4 md:flex-row md:items-center md:px-6">
@@ -96,25 +104,29 @@ export function ParcoursToolbar({
         })}
       </div>
 
-      <label className="flex items-center gap-2 text-sm">
+      <div className="flex items-center gap-2 text-sm">
         <span className="text-muted-foreground whitespace-nowrap">
           Trier par
         </span>
-        <select
+        <Select
           value={sortValue}
-          onChange={(e) => {
-            const option = SORT_OPTIONS.find((o) => o.value === e.target.value)
+          onValueChange={(val) => {
+            const option = SORT_OPTIONS.find((o) => o.value === val)
             if (option) onSort(option.sort, option.dir)
           }}
-          className="border-input bg-background focus-visible:border-ring focus-visible:ring-ring/50 h-8 w-full rounded-lg border px-2 text-sm outline-none focus-visible:ring-3 md:w-auto"
         >
-          {SORT_OPTIONS.map((o) => (
-            <option key={o.value} value={o.value}>
-              {o.label}
-            </option>
-          ))}
-        </select>
-      </label>
+          <SelectTrigger className="h-8 w-full md:w-44">
+            <SelectValue>{currentSortOption?.label}</SelectValue>
+          </SelectTrigger>
+          <SelectContent>
+            {SORT_OPTIONS.map((o) => (
+              <SelectItem key={o.value} value={o.value}>
+                {o.label}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </div>
 
       {hasActiveCriteria(query) && (
         <Button type="button" variant="ghost" onClick={onReset}>

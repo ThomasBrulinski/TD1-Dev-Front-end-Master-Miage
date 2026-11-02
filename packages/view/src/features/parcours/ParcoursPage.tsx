@@ -13,7 +13,7 @@ import { ParcoursToolbar } from "./components/ParcoursToolbar"
 import { useParcours } from "./hooks/useParcours"
 import { useParcoursExplorer } from "./hooks/useParcoursExplorer"
 
-const EMPTY: never[] = [] // référence stable → évite de recalculer le useMemo
+const EMPTY: never[] = []
 
 export function ParcoursPage() {
   const { data, isPending, isError, isRefetching, refetch } = useParcours()

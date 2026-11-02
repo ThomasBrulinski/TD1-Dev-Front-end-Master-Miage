@@ -20,7 +20,6 @@ function StateBlock({
   )
 }
 
-/** Squelette : garde la mise en page stable pendant le chargement. */
 export function ParcoursLoading() {
   return (
     <div

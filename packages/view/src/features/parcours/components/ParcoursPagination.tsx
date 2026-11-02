@@ -1,6 +1,13 @@
 import { ChevronLeft, ChevronRight } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
+import {
   PAGE_SIZES,
   type PageSize,
   type ParcoursPageResult,
@@ -31,17 +38,21 @@ export function ParcoursPagination({
       <div className="flex items-center justify-between gap-4 md:justify-end">
         <label className="flex items-center gap-2">
           <span className="text-muted-foreground">Par page</span>
-          <select
-            value={size}
-            onChange={(e) => onSize(Number(e.target.value) as PageSize)}
-            className="border-input bg-background h-8 rounded-lg border px-2 text-sm"
+          <Select
+            value={String(size)}
+            onValueChange={(value) => onSize(Number(value) as PageSize)}
           >
-            {PAGE_SIZES.map((s) => (
-              <option key={s} value={s}>
-                {s}
-              </option>
-            ))}
-          </select>
+            <SelectTrigger className="h-8 w-20">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {PAGE_SIZES.map((s) => (
+                <SelectItem key={s} value={String(s)}>
+                  {s}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </label>
 
         <nav aria-label="Pagination" className="flex items-center gap-2">
