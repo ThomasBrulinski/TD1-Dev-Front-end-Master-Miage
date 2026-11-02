@@ -59,7 +59,7 @@ function SortableHead({
 export function ParcoursTable({ parcours, query, onSort }: ParcoursTableProps) {
   return (
     <Table>
-      <TableHeader>
+      <TableHeader className="bg-accent">
         <TableRow>
           <SortableHead
             label="Nom du parcours"
@@ -84,9 +84,7 @@ export function ParcoursTable({ parcours, query, onSort }: ParcoursTableProps) {
       <TableBody>
         {parcours.map((item) => (
           <TableRow key={item.id}>
-            <TableCell className="px-6 py-3 font-medium">
-              {item.nomParcours}
-            </TableCell>
+            <TableCell className="px-6 py-3">{item.nomParcours}</TableCell>
             <TableCell className="px-6 py-3">
               <Badge variant="secondary">M{item.anneeFormation}</Badge>
             </TableCell>
