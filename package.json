@@ -20,5 +20,8 @@
     "test": "bun test tests",
     "build": "bun run --cwd packages/view build",
     "check": "bun run lint && bun run typecheck && bun run test && bun run build"
+  },
+  "dependencies": {
+    "@radix-ui/react-slot": "^1.5.0"
   }
 }
