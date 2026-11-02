@@ -1,45 +1,75 @@
-import { useQuery } from "@tanstack/react-query"
 import { Card, PageContainer, PageHeader } from "@/components/layout/Page"
-import { Button } from "@/components/ui/button"
 import { AddParcoursModal } from "./components/AddParcoursModal"
+import { ParcoursCards } from "./components/ParcoursCards"
+import { ParcoursPagination } from "./components/ParcoursPagination"
+import {
+  ParcoursEmpty,
+  ParcoursError,
+  ParcoursLoading,
+  ParcoursNoResults,
+} from "./components/ParcoursStates"
 import { ParcoursTable } from "./components/ParcoursTable"
-import { getParcours } from "./services/parcoursService"
+import { ParcoursToolbar } from "./components/ParcoursToolbar"
+import { useParcours } from "./hooks/useParcours"
+import { useParcoursExplorer } from "./hooks/useParcoursExplorer"
+
+const EMPTY: never[] = [] // référence stable → évite de recalculer le useMemo
 
 export function ParcoursPage() {
-  const { data: parcours = [], isPending, isError, refetch } = useQuery({
-    queryKey: ["parcours"],
-    queryFn: getParcours,
-  })
+  const { data, isPending, isError, isRefetching, refetch } = useParcours()
+  const explorer = useParcoursExplorer(data ?? EMPTY)
+  const { query, result } = explorer
+
+  const hasData = !isPending && !isError
+  const isListEmpty = hasData && result.totalAll === 0
+  const noResults = hasData && !isListEmpty && result.totalFiltered === 0
 
   return (
     <PageContainer>
       <PageHeader
         title="Parcours"
-        description="Liste et gestion des parcours de formation."
+        description="Consultez, recherchez et organisez les parcours de formation."
         actions={<AddParcoursModal />}
       />
 
-      <Card className="p-0">
-        {isPending && (
-          <p className="text-muted-foreground px-6 py-10 text-center">Chargement des parcours…</p>
+      <Card className="overflow-hidden p-0">
+        {hasData && !isListEmpty && (
+          <ParcoursToolbar
+            query={query}
+            onSearch={explorer.setQ}
+            onAnnee={explorer.setAnnee}
+            onSort={explorer.setSort}
+            onReset={explorer.resetCriteria}
+          />
         )}
 
+        {isPending && <ParcoursLoading />}
         {isError && (
-          <div className="px-6 py-10 text-center">
-            <p className="font-medium">Impossible de charger les parcours.</p>
-            <Button variant="outline" className="mt-4" onClick={() => refetch()}>
-              Réessayer
-            </Button>
-          </div>
+          <ParcoursError onRetry={() => refetch()} isRetrying={isRefetching} />
         )}
+        {isListEmpty && <ParcoursEmpty />}
+        {noResults && <ParcoursNoResults onReset={explorer.resetCriteria} />}
 
-        {!isPending && !isError && parcours.length === 0 && (
-          <p className="text-muted-foreground px-6 py-10 text-center">
-            Aucun parcours pour le moment.
-          </p>
+        {hasData && result.items.length > 0 && (
+          <>
+            <div className="hidden md:block">
+              <ParcoursTable
+                parcours={result.items}
+                query={query}
+                onSort={explorer.toggleSort}
+              />
+            </div>
+            <div className="md:hidden">
+              <ParcoursCards parcours={result.items} />
+            </div>
+            <ParcoursPagination
+              result={result}
+              size={query.size}
+              onPage={explorer.setPage}
+              onSize={explorer.setSize}
+            />
+          </>
         )}
-
-        {parcours.length > 0 && <ParcoursTable parcours={parcours} />}
       </Card>
     </PageContainer>
   )
