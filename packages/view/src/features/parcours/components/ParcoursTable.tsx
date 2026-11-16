@@ -14,8 +14,9 @@ import {
   type SortKey,
 } from "../lib/parcoursQuery"
 import type { Parcours } from "../services/parcoursService"
+import { ParcoursRowActions, type ParcoursActions } from "./ParcoursRowActions"
 
-type ParcoursTableProps = {
+type ParcoursTableProps = ParcoursActions & {
   parcours: Parcours[]
   query: Pick<ParcoursQuery, "sort" | "dir">
   onSort: (sort: SortKey) => void
@@ -56,7 +57,13 @@ function SortableHead({
   )
 }
 
-export function ParcoursTable({ parcours, query, onSort }: ParcoursTableProps) {
+export function ParcoursTable({
+  parcours,
+  query,
+  onSort,
+  onEdit,
+  onDelete,
+}: ParcoursTableProps) {
   return (
     <Table>
       <TableHeader className="bg-accent">
@@ -79,6 +86,9 @@ export function ParcoursTable({ parcours, query, onSort }: ParcoursTableProps) {
             query={query}
             onSort={onSort}
           />
+          <TableHead className="w-28 px-6 py-3">
+            <span className="sr-only">Actions</span>
+          </TableHead>
         </TableRow>
       </TableHeader>
       <TableBody>
@@ -90,6 +100,13 @@ export function ParcoursTable({ parcours, query, onSort }: ParcoursTableProps) {
             </TableCell>
             <TableCell className="text-muted-foreground px-6 py-3">
               {formatDate(item.created_at)}
+            </TableCell>
+            <TableCell className="px-4 py-2">
+              <ParcoursRowActions
+                parcours={item}
+                onEdit={onEdit}
+                onDelete={onDelete}
+              />
             </TableCell>
           </TableRow>
         ))}

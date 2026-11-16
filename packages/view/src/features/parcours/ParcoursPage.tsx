@@ -1,5 +1,8 @@
+import { Plus } from "lucide-react"
 import { Card, PageContainer, PageHeader } from "@/components/layout/Page"
-import { AddParcoursModal } from "./components/AddParcoursModal"
+import { Button } from "@/components/ui/button"
+import { DeleteParcoursDialog } from "./components/DeleteParcoursDialog"
+import { ParcoursFormDialog } from "./components/ParcoursFormDialog"
 import { ParcoursCards } from "./components/ParcoursCards"
 import { ParcoursPagination } from "./components/ParcoursPagination"
 import {
@@ -10,6 +13,8 @@ import {
 } from "./components/ParcoursStates"
 import { ParcoursTable } from "./components/ParcoursTable"
 import { ParcoursToolbar } from "./components/ParcoursToolbar"
+import type { Parcours } from "./services/parcoursService"
+import { useDialogTarget } from "./hooks/useDialogTarget"
 import { useParcours } from "./hooks/useParcours"
 import { useParcoursExplorer } from "./hooks/useParcoursExplorer"
 
@@ -20,6 +25,9 @@ export function ParcoursPage() {
   const explorer = useParcoursExplorer(data ?? EMPTY)
   const { query, result } = explorer
 
+  const formDialog = useDialogTarget<Parcours | null>(null)
+  const deleteDialog = useDialogTarget<Parcours | null>(null)
+
   const hasData = !isPending && !isError
   const isListEmpty = hasData && result.totalAll === 0
   const noResults = hasData && !isListEmpty && result.totalFiltered === 0
@@ -29,7 +37,12 @@ export function ParcoursPage() {
       <PageHeader
         title="Parcours"
         description="Consultez, recherchez et organisez les parcours de formation."
-        actions={<AddParcoursModal />}
+        actions={
+          <Button type="button" onClick={() => formDialog.show(null)}>
+            <Plus />
+            Nouveau parcours
+          </Button>
+        }
       />
 
       <Card className="overflow-hidden p-0">
@@ -57,10 +70,16 @@ export function ParcoursPage() {
                 parcours={result.items}
                 query={query}
                 onSort={explorer.toggleSort}
+                onEdit={formDialog.show}
+                onDelete={deleteDialog.show}
               />
             </div>
             <div className="md:hidden">
-              <ParcoursCards parcours={result.items} />
+              <ParcoursCards
+                parcours={result.items}
+                onEdit={formDialog.show}
+                onDelete={deleteDialog.show}
+              />
             </div>
             <ParcoursPagination
               result={result}
@@ -71,6 +90,17 @@ export function ParcoursPage() {
           </>
         )}
       </Card>
+
+      <ParcoursFormDialog
+        open={formDialog.open}
+        parcours={formDialog.target}
+        onClose={formDialog.hide}
+      />
+      <DeleteParcoursDialog
+        open={deleteDialog.open}
+        parcours={deleteDialog.target}
+        onClose={deleteDialog.hide}
+      />
     </PageContainer>
   )
 }

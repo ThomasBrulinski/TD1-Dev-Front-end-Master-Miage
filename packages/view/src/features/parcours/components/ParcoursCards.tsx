@@ -1,8 +1,13 @@
 import { Badge } from "@/components/ui/badge"
 import { formatDate } from "../lib/parcoursQuery"
 import type { Parcours } from "../services/parcoursService"
+import { ParcoursRowActions, type ParcoursActions } from "./ParcoursRowActions"
 
-export function ParcoursCards({ parcours }: { parcours: Parcours[] }) {
+export function ParcoursCards({
+  parcours,
+  onEdit,
+  onDelete,
+}: ParcoursActions & { parcours: Parcours[] }) {
   return (
     <ul className="divide-y">
       {parcours.map((item) => (
@@ -17,6 +22,11 @@ export function ParcoursCards({ parcours }: { parcours: Parcours[] }) {
             </p>
           </div>
           <Badge variant="secondary">M{item.anneeFormation}</Badge>
+          <ParcoursRowActions
+            parcours={item}
+            onEdit={onEdit}
+            onDelete={onDelete}
+          />
         </li>
       ))}
     </ul>

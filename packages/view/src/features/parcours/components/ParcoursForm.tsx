@@ -14,7 +14,9 @@ type ParcoursFormProps = {
   setAnnee: (value: string) => void
   errors: { nom?: string; annee?: string }
   isPending: boolean
-  isError: boolean
+  errorMessage: string | null
+  submitLabel: string
+  submitDisabled?: boolean
   onSubmit: (e: FormEvent) => void
   onCancel: () => void
 }
@@ -26,7 +28,9 @@ export function ParcoursForm({
   setAnnee,
   errors,
   isPending,
-  isError,
+  errorMessage,
+  submitLabel,
+  submitDisabled = false,
   onSubmit,
   onCancel,
 }: ParcoursFormProps) {
@@ -74,13 +78,12 @@ export function ParcoursForm({
         )}
       </div>
 
-      {isError && (
+      {errorMessage && (
         <Alert variant="destructive">
           <CircleAlert />
-          <AlertTitle>Le parcours n'a pas été créé.</AlertTitle>
+          <AlertTitle>L'enregistrement a échoué.</AlertTitle>
           <AlertDescription>
-            Vérifiez que le serveur est démarré, puis réessayez. Votre saisie a
-            été conservée.
+            {errorMessage} Votre saisie a été conservée.
           </AlertDescription>
         </Alert>
       )}
@@ -94,9 +97,9 @@ export function ParcoursForm({
         >
           Annuler
         </Button>
-        <Button type="submit" disabled={isPending}>
+        <Button type="submit" disabled={isPending || submitDisabled}>
           {isPending && <Loader2 className="animate-spin" />}
-          {isPending ? "Enregistrement…" : "Créer le parcours"}
+          {isPending ? "Enregistrement…" : submitLabel}
         </Button>
       </DialogFooter>
     </form>
