@@ -1,3 +1,4 @@
+import { useState } from "react"
 import { ConfirmDialog } from "@/components/shared/ConfirmDialog"
 import { toast } from "@/components/ui/toast"
 import { useDeleteParcours } from "../hooks/useParcoursMutations"
@@ -11,8 +12,10 @@ type Props = {
 
 export function DeleteParcoursDialog({ open, parcours, onClose }: Props) {
   const mutation = useDeleteParcours()
+  const [isSecondConfirmOpen, setIsSecondConfirmOpen] = useState(false)
 
   function close() {
+    setIsSecondConfirmOpen(false)
     mutation.reset()
     onClose()
   }
@@ -32,23 +35,44 @@ export function DeleteParcoursDialog({ open, parcours, onClose }: Props) {
   }
 
   return (
-    <ConfirmDialog
-      open={open}
-      title="Supprimer ce parcours ?"
-      description={
-        parcours && (
-          <>
-            Vous allez supprimer <strong>{parcours.nomParcours}</strong> (M
-            {parcours.anneeFormation}). Cette action est définitive : les
-            étudiants et les UE rattachés ne seront plus associés à ce parcours.
-          </>
-        )
-      }
-      confirmLabel="Supprimer définitivement"
-      isPending={mutation.isPending}
-      errorMessage={mutation.isError ? getErrorMessage(mutation.error) : null}
-      onConfirm={confirm}
-      onCancel={close}
-    />
+    <>
+      {/* 1ère pop-up : avertissement */}
+      <ConfirmDialog
+        open={open && !isSecondConfirmOpen}
+        title="Supprimer ce parcours ?"
+        description={
+          parcours && (
+            <>
+              Vous allez supprimer <strong>{parcours.nomParcours}</strong> (M
+              {parcours.anneeFormation}). Cette action est définitive : les
+              étudiants et les UE rattachés ne seront plus associés à ce parcours.
+            </>
+          )
+        }
+        confirmLabel="Supprimer définitivement"
+        onConfirm={() => setIsSecondConfirmOpen(true)}
+        onCancel={close}
+      />
+
+      {/* 2ème pop-up : ultime confirmation Oui / Non */}
+      <ConfirmDialog
+        open={open && isSecondConfirmOpen}
+        title="Êtes-vous sûr ?"
+        description={
+          parcours && (
+            <>
+              Confirmez-vous vraiment la suppression définitive de{" "}
+              <strong>{parcours.nomParcours}</strong> ?
+            </>
+          )
+        }
+        confirmLabel="Oui"
+        cancelLabel="Non"
+        isPending={mutation.isPending}
+        errorMessage={mutation.isError ? getErrorMessage(mutation.error) : null}
+        onConfirm={confirm}
+        onCancel={close}
+      />
+    </>
   )
 }
