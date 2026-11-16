@@ -50,6 +50,7 @@ export function DeleteParcoursDialog({ open, parcours, onClose }: Props) {
           )
         }
         confirmLabel="Supprimer définitivement"
+        isPending={false}
         onConfirm={() => setIsSecondConfirmOpen(true)}
         onCancel={close}
       />
